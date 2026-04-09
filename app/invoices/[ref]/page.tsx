@@ -133,7 +133,7 @@ export default async function InvoicePage({
                 <div>
                   <p className="font-semibold leading-tight">
                     {h.name as string}
-                    {h.verified && (
+                    {!!h.verified && (
                       <BadgeCheck className="ml-1 inline size-3.5 text-primary" />
                     )}
                   </p>
