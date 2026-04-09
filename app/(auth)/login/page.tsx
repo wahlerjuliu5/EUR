@@ -12,7 +12,7 @@ export default function LoginPage() {
     <div className="w-full max-w-sm rounded-xl border border-border bg-card p-8 shadow-sm">
       <h1 className="mb-1 text-xl font-semibold">Sign in</h1>
       <p className="mb-6 text-sm text-muted-foreground">
-        Welcome back to FixItNow
+        Welcome back to HandyBook
       </p>
 
       <form action={action} className="flex flex-col gap-4">
@@ -59,7 +59,10 @@ export default function LoginPage() {
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         No account?{" "}
-        <Link href="/signup" className="font-medium text-foreground hover:underline">
+        <Link
+          href="/signup"
+          className="font-medium text-foreground hover:underline"
+        >
           Sign up
         </Link>
       </p>

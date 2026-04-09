@@ -12,6 +12,7 @@ export async function signUp(
 ): Promise<AuthState> {
   const email = formData.get("email") as string
   const password = formData.get("password") as string
+  const role = (formData.get("role") as string) || "client"
 
   const headersList = await headers()
   const origin = headersList.get("origin") ?? "http://localhost:3000"
@@ -20,7 +21,10 @@ export async function signUp(
   const { error } = await supabase.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: `${origin}/auth/callback` },
+    options: {
+      emailRedirectTo: `${origin}/auth/callback`,
+      data: { role },
+    },
   })
 
   if (error) return { error: error.message }

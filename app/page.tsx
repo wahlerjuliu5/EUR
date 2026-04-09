@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Search, MapPin, Star, Shield, Clock } from "lucide-react"
+import { Search, MapPin, Star, Shield, Clock, CheckCircle, Percent, HandCoins } from "lucide-react"
 import { Nav } from "@/components/nav"
 
 const CATEGORIES = [
@@ -11,6 +11,9 @@ const CATEGORIES = [
   { label: "Cleaner", emoji: "🧹" },
   { label: "Gardener", emoji: "🌱" },
   { label: "HVAC", emoji: "❄️" },
+  { label: "Locksmith", emoji: "🔐" },
+  { label: "Roofer", emoji: "🏠" },
+  { label: "Tiler", emoji: "🪟" },
 ]
 
 const STEPS = [
@@ -18,7 +21,7 @@ const STEPS = [
     icon: Search,
     step: "1",
     title: "Search",
-    desc: "Filter by trade, location, price, and availability to find your match.",
+    desc: "Filter by trade, location, price, and availability to find your perfect match.",
   },
   {
     icon: Clock,
@@ -38,19 +41,20 @@ const TRUST = [
   {
     icon: Shield,
     title: "Verified professionals",
-    desc: "ID + trade certification checked",
+    desc: "ID and trade certification checked before listing",
   },
   {
     icon: Star,
     title: "Genuine reviews",
-    desc: "Only from completed bookings",
+    desc: "Only from verified, completed bookings",
   },
   {
     icon: Clock,
     title: "Real-time availability",
-    desc: "Book for today or schedule ahead",
+    desc: "Book for today or schedule weeks ahead",
   },
 ]
+
 
 export default function HomePage() {
   return (
@@ -58,13 +62,15 @@ export default function HomePage() {
       <Nav />
 
       {/* Hero */}
-      <section className="bg-linear-to-br from-blue-800 to-blue-950 px-6 py-28 text-white">
+      <section className="border-b px-6 py-24">
         <div className="mx-auto max-w-3xl text-center">
+          <p className="mb-3 text-sm font-medium uppercase tracking-widest text-primary">
+            Trusted tradespeople, on demand
+          </p>
           <h1 className="mb-4 text-5xl font-bold leading-tight tracking-tight sm:text-6xl">
-            Book a trusted tradesperson,{" "}
-            <span className="text-blue-300">instantly.</span>
+            Book a tradesperson you can trust, instantly.
           </h1>
-          <p className="mb-12 text-lg text-blue-200">
+          <p className="mb-12 text-base text-muted-foreground">
             Find vetted plumbers, electricians, handymen and more — available
             near you, today.
           </p>
@@ -72,12 +78,12 @@ export default function HomePage() {
           <form
             action="/search"
             method="GET"
-            className="mx-auto flex max-w-2xl flex-col gap-3 rounded-2xl bg-white p-3 shadow-2xl sm:flex-row"
+            className="mx-auto flex max-w-2xl flex-col gap-2 rounded-xl border bg-card p-2 shadow-sm sm:flex-row"
           >
             <select
               name="q"
               defaultValue=""
-              className="flex-1 rounded-xl bg-muted px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 rounded-lg bg-muted px-4 py-2.5 text-sm text-foreground outline-none focus-visible:ring-1 focus-visible:ring-ring"
             >
               <option value="" disabled>
                 Select a trade
@@ -95,13 +101,13 @@ export default function HomePage() {
                 name="city"
                 type="text"
                 placeholder="City (e.g. Amsterdam)"
-                className="w-full rounded-xl bg-muted py-3 pl-9 pr-4 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg bg-muted py-2.5 pl-9 pr-4 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring"
               />
             </div>
 
             <button
               type="submit"
-              className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               <Search className="size-4" />
               Search
@@ -130,21 +136,21 @@ export default function HomePage() {
       {/* Categories */}
       <section className="px-6 py-20">
         <div className="mx-auto max-w-5xl">
-          <h2 className="mb-2 text-center text-3xl font-bold">
+          <h2 className="mb-2 text-center text-3xl font-bold tracking-tight">
             Browse by trade
           </h2>
           <p className="mb-10 text-center text-muted-foreground">
             From emergency repairs to full renovations.
           </p>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
             {CATEGORIES.map((cat) => (
               <Link
                 key={cat.label}
                 href={`/search?q=${cat.label}`}
-                className="flex flex-col items-center gap-3 rounded-2xl border bg-card p-6 text-center transition-all hover:border-blue-300 hover:shadow-md"
+                className="flex flex-col items-center gap-2 rounded-xl border bg-card px-3 py-5 text-center transition-all hover:border-primary/40 hover:bg-muted/50 hover:shadow-sm"
               >
-                <span className="text-4xl">{cat.emoji}</span>
-                <span className="font-medium">{cat.label}</span>
+                <span className="text-3xl">{cat.emoji}</span>
+                <span className="text-xs font-medium">{cat.label}</span>
               </Link>
             ))}
           </div>
@@ -152,22 +158,27 @@ export default function HomePage() {
       </section>
 
       {/* How it works */}
-      <section className="bg-muted/40 px-6 py-20">
+      <section className="border-y bg-muted/40 px-6 py-20">
         <div className="mx-auto max-w-5xl">
-          <h2 className="mb-2 text-center text-3xl font-bold">How it works</h2>
+          <h2 className="mb-2 text-center text-3xl font-bold tracking-tight">
+            How it works
+          </h2>
           <p className="mb-14 text-center text-muted-foreground">
             From search to signed invoice in minutes.
           </p>
           <div className="grid gap-10 sm:grid-cols-3">
             {STEPS.map(({ icon: Icon, step, title, desc }) => (
-              <div key={step} className="flex flex-col items-center text-center">
-                <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-blue-600 text-white">
-                  <Icon className="size-6" />
+              <div
+                key={step}
+                className="flex flex-col items-center text-center"
+              >
+                <div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                  <Icon className="size-5" />
                 </div>
-                <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-blue-600">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                   Step {step}
                 </p>
-                <h3 className="mb-2 text-xl font-semibold">{title}</h3>
+                <h3 className="mb-2 text-lg font-semibold">{title}</h3>
                 <p className="text-sm leading-relaxed text-muted-foreground">
                   {desc}
                 </p>
@@ -177,17 +188,121 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Pricing */}
+      <section className="px-6 py-20">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="mb-2 text-center text-3xl font-bold tracking-tight">
+            Fair for everyone
+          </h2>
+          <p className="mb-12 text-center text-muted-foreground">
+            No subscriptions. No hidden fees. Just a small commission that
+            rewards everyone involved.
+          </p>
+
+          {/* Commission explainer */}
+          <div className="mb-10 rounded-xl border bg-primary/5 p-6 text-center">
+            <p className="text-sm font-medium uppercase tracking-widest text-primary">
+              How the commission works
+            </p>
+            <p className="mt-3 text-4xl font-bold">10%</p>
+            <p className="mt-1 text-muted-foreground">
+              platform fee, added to the service price at checkout
+            </p>
+            <div className="mt-6 flex flex-wrap justify-center gap-4 text-sm">
+              <span className="flex items-center gap-2 rounded-full border bg-card px-4 py-1.5">
+                <span className="size-2 rounded-full bg-primary" />
+                7% goes to HandyBook
+              </span>
+              <span className="flex items-center gap-2 rounded-full border bg-card px-4 py-1.5">
+                <span className="size-2 rounded-full bg-accent" />
+                3% goes back to the tradesperson as a loyalty bonus
+              </span>
+            </div>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2">
+            {/* Homeowner card */}
+            <div className="flex flex-col gap-4 rounded-xl border bg-card p-6">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
+                  <Percent className="size-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-semibold">Homeowners</p>
+                  <p className="text-sm text-muted-foreground">
+                    Pay the service price + 10%
+                  </p>
+                </div>
+              </div>
+              <ul className="flex flex-col gap-2.5 text-sm">
+                {[
+                  "Browse and book any verified pro for free",
+                  "10% platform fee added transparently at checkout",
+                  "Full price breakdown shown before you confirm",
+                  "Secure payments and digital invoices included",
+                ].map((f) => (
+                  <li key={f} className="flex items-start gap-2">
+                    <CheckCircle className="mt-0.5 size-4 shrink-0 text-primary" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/signup"
+                className="mt-auto inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                Get started — it&apos;s free
+              </Link>
+            </div>
+
+            {/* Tradesperson card */}
+            <div className="flex flex-col gap-4 rounded-xl border bg-card p-6">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-lg bg-accent/10">
+                  <HandCoins className="size-5 text-accent" />
+                </div>
+                <div>
+                  <p className="font-semibold">Tradespeople</p>
+                  <p className="text-sm text-muted-foreground">
+                    Always free — and you earn more
+                  </p>
+                </div>
+              </div>
+              <ul className="flex flex-col gap-2.5 text-sm">
+                {[
+                  "No monthly fee, no listing cost — ever",
+                  "Keep 100% of your quoted rate",
+                  "Earn a 3% loyalty bonus on every completed job",
+                  "Bonus paid directly to your account monthly",
+                ].map((f) => (
+                  <li key={f} className="flex items-start gap-2">
+                    <CheckCircle className="mt-0.5 size-4 shrink-0 text-accent" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/signup"
+                className="mt-auto inline-flex items-center justify-center rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+              >
+                Join as a tradesperson
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Trust */}
-      <section className="px-6 py-16">
+      <section className="border-t bg-muted/40 px-6 py-16">
         <div className="mx-auto max-w-5xl">
           <div className="flex flex-wrap justify-center gap-12">
             {TRUST.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="flex items-start gap-4">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50">
-                  <Icon className="size-5 text-blue-600" />
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border bg-card">
+                  <Icon className="size-4 text-primary" />
                 </div>
                 <div>
-                  <p className="font-semibold">{title}</p>
+                  <p className="text-sm font-semibold">{title}</p>
                   <p className="text-sm text-muted-foreground">{desc}</p>
                 </div>
               </div>
@@ -199,7 +314,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="mt-auto border-t bg-muted/40 px-6 py-8">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>© 2026 FixItNow. All rights reserved.</p>
+          <p>© 2026 HandyBook. All rights reserved.</p>
           <div className="flex gap-6">
             <a href="#" className="transition-colors hover:text-foreground">
               Privacy

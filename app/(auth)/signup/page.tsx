@@ -21,11 +21,35 @@ export default function SignupPage() {
   return (
     <div className="w-full max-w-sm rounded-xl border border-border bg-card p-8 shadow-sm">
       <h1 className="mb-1 text-xl font-semibold">Create an account</h1>
-      <p className="mb-6 text-sm text-muted-foreground">
-        Join FixItNow today
-      </p>
+      <p className="mb-6 text-sm text-muted-foreground">Join HandyBook today</p>
 
       <form action={action} className="flex flex-col gap-4">
+        {/* Role selection */}
+        <div className="flex flex-col gap-1.5">
+          <p className="text-sm font-medium">I am a…</p>
+          <div className="grid grid-cols-2 gap-2">
+            <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-input px-3 py-2.5 text-sm transition-colors has-checked:border-primary has-checked:bg-primary/5">
+              <input
+                type="radio"
+                name="role"
+                value="client"
+                defaultChecked
+                className="accent-primary"
+              />
+              Homeowner
+            </label>
+            <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-input px-3 py-2.5 text-sm transition-colors has-checked:border-primary has-checked:bg-primary/5">
+              <input
+                type="radio"
+                name="role"
+                value="handyman"
+                className="accent-primary"
+              />
+              Tradesperson
+            </label>
+          </div>
+        </div>
+
         <div className="flex flex-col gap-1.5">
           <label htmlFor="email" className="text-sm font-medium">
             Email
@@ -53,7 +77,7 @@ export default function SignupPage() {
             required
             minLength={8}
             className="h-9 rounded-lg border border-input bg-background px-3 text-sm outline-none ring-offset-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
-            placeholder="••••••••"
+            placeholder="Min. 8 characters"
           />
         </div>
 
@@ -70,7 +94,10 @@ export default function SignupPage() {
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-foreground hover:underline">
+        <Link
+          href="/login"
+          className="font-medium text-foreground hover:underline"
+        >
           Sign in
         </Link>
       </p>

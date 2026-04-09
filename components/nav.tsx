@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Zap } from "lucide-react"
+import { BookCheck } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
 import { signOut } from "@/app/actions/auth"
 
@@ -12,9 +12,12 @@ export async function Nav() {
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center gap-1.5 text-xl font-bold">
-          <Zap className="size-5 fill-blue-500 text-blue-500" />
-          FixItNow
+        <Link
+          href="/"
+          className="flex items-center gap-1.5 text-xl font-bold tracking-tight"
+        >
+          <BookCheck className="size-5 text-primary" />
+          HandyBook
         </Link>
 
         <nav className="flex items-center gap-5">
