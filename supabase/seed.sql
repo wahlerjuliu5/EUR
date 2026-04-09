@@ -32,6 +32,11 @@ DROP POLICY IF EXISTS "public_read_handymen" ON handymen;
 CREATE POLICY "public_read_handymen"
   ON handymen FOR SELECT USING (true);
 
+-- Allow new tradespeople to insert their own profile during signup
+DROP POLICY IF EXISTS "anyone_can_insert_handymen" ON handymen;
+CREATE POLICY "anyone_can_insert_handymen"
+  ON handymen FOR INSERT WITH CHECK (true);
+
 -- ── 3. Search view ───────────────────────────────────────────────────────────
 CREATE OR REPLACE VIEW v_handyman_search AS
   SELECT id, name, trade, city, hourly_rate,
@@ -307,3 +312,33 @@ VALUES
   '[{"day":"Tue","slots":["08:00–17:00"]},{"day":"Thu","slots":["08:00–17:00"]},{"day":"Sat","slots":["09:00–15:00"]}]'::jsonb,
   '[{"name":"Survey & quote","price":0,"unit":"fixed"},{"name":"Labour (per m²)","price":50,"unit":"m²"},{"name":"Wet room installation","price":1200,"unit":"from"},{"name":"Tile removal & prep (per m²)","price":20,"unit":"m²"}]'::jsonb
 );
+
+-- ── 5. Bookings table ─────────────────────────────────────────────────────────
+DROP TABLE IF EXISTS bookings CASCADE;
+
+CREATE TABLE bookings (
+  id               uuid          PRIMARY KEY DEFAULT gen_random_uuid(),
+  booking_ref      text          UNIQUE NOT NULL,
+  handyman_id      uuid          NOT NULL REFERENCES handymen(id),
+  customer_name    text          NOT NULL,
+  customer_email   text          NOT NULL,
+  selected_date    date          NOT NULL,
+  selected_slot    text          NOT NULL,
+  hours            int           NOT NULL CHECK (hours BETWEEN 1 AND 8),
+  description      text          NOT NULL,
+  hourly_rate      numeric(10,2) NOT NULL,
+  service_price    numeric(10,2) NOT NULL,
+  commission       numeric(10,2) NOT NULL,
+  handyman_bonus   numeric(10,2) NOT NULL,
+  total            numeric(10,2) NOT NULL,
+  status           text          NOT NULL DEFAULT 'pending',
+  created_at       timestamptz   NOT NULL DEFAULT now()
+);
+
+ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "public_insert_bookings"
+  ON bookings FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "public_select_bookings"
+  ON bookings FOR SELECT USING (true);
