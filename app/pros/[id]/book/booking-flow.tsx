@@ -14,7 +14,9 @@ import {
   Plus,
   MapPin,
   Star,
+  Receipt,
 } from "lucide-react"
+import { createBooking } from "@/app/actions/book"
 
 type AvailSlot = { day: string; slots: string[] }
 type Service = { name: string; price: number; unit: string }
@@ -65,9 +67,11 @@ export function BookingFlow({ handyman }: { handyman: Handyman }) {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
   const [hours, setHours] = useState(2)
   const [description, setDescription] = useState("")
-  const [bookingRef] = useState(
-    () => "HB-" + Math.random().toString(36).slice(2, 8).toUpperCase()
-  )
+  const [customerName, setCustomerName] = useState("")
+  const [customerEmail, setCustomerEmail] = useState("")
+  const [bookingRef, setBookingRef] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const availMap = useMemo(
     () =>
@@ -174,9 +178,18 @@ export function BookingFlow({ handyman }: { handyman: Handyman }) {
             </div>
 
             <div className="mt-6 flex flex-col gap-2">
+              {bookingRef && (
+                <Link
+                  href={`/invoices/${bookingRef}`}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                >
+                  <Receipt className="size-4" />
+                  View invoice
+                </Link>
+              )}
               <Link
                 href="/login"
-                className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                className="inline-flex w-full items-center justify-center rounded-lg border border-border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
               >
                 Sign in to manage your booking
               </Link>
@@ -343,6 +356,44 @@ export function BookingFlow({ handyman }: { handyman: Handyman }) {
             <div className="rounded-xl border bg-card p-6">
               <h2 className="mb-5 text-base font-semibold">Job details</h2>
 
+              {/* Contact details */}
+              <div className="mb-5 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="customerName"
+                    className="mb-1.5 block text-sm font-medium"
+                  >
+                    Your name
+                    <span className="text-destructive"> *</span>
+                  </label>
+                  <input
+                    id="customerName"
+                    type="text"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="Jane Smith"
+                    className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="customerEmail"
+                    className="mb-1.5 block text-sm font-medium"
+                  >
+                    Email for confirmation
+                    <span className="text-destructive"> *</span>
+                  </label>
+                  <input
+                    id="customerEmail"
+                    type="email"
+                    value={customerEmail}
+                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    placeholder="jane@example.com"
+                    className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring"
+                  />
+                </div>
+              </div>
+
               {/* Duration */}
               <div className="mb-5">
                 <p className="mb-3 text-sm font-medium">Estimated duration</p>
@@ -418,7 +469,11 @@ export function BookingFlow({ handyman }: { handyman: Handyman }) {
                 Back
               </button>
               <button
-                disabled={!description.trim()}
+                disabled={
+                  !description.trim() ||
+                  !customerName.trim() ||
+                  !customerEmail.includes("@")
+                }
                 onClick={() => setStep(3)}
                 className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed"
               >
@@ -510,20 +565,54 @@ export function BookingFlow({ handyman }: { handyman: Handyman }) {
               </p>
             </div>
 
+            {submitError && (
+              <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-2.5 text-sm text-destructive">
+                {submitError}
+              </p>
+            )}
+
             <div className="flex gap-3 self-end">
               <button
                 onClick={() => setStep(2)}
-                className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+                disabled={isSubmitting}
+                className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-muted disabled:opacity-40"
               >
                 <ArrowLeft className="size-4" />
                 Back
               </button>
               <button
-                onClick={() => setStep("done")}
-                className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                disabled={isSubmitting}
+                onClick={async () => {
+                  setIsSubmitting(true)
+                  setSubmitError(null)
+                  const result = await createBooking({
+                    handyman_id: handyman.id,
+                    customer_name: customerName,
+                    customer_email: customerEmail,
+                    selected_date: selectedDate
+                      ? `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`
+                      : "",
+                    selected_slot: selectedSlot ?? "",
+                    hours,
+                    description,
+                    hourly_rate: handyman.hourly_rate,
+                    service_price: servicePrice,
+                    commission,
+                    handyman_bonus: handymanBonus,
+                    total,
+                  })
+                  if ("error" in result) {
+                    setSubmitError(result.error)
+                    setIsSubmitting(false)
+                  } else {
+                    setBookingRef(result.bookingRef)
+                    setStep("done")
+                  }
+                }}
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <Check className="size-4" />
-                Confirm booking
+                {isSubmitting ? "Confirming…" : "Confirm booking"}
               </button>
             </div>
           </div>
